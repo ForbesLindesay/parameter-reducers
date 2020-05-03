@@ -14,7 +14,7 @@ export function parse<T>(
       reason: string;
     }
   | {
-      valid: boolean;
+      valid: true;
       rest: string[];
       parsed: Partial<T>;
     } {

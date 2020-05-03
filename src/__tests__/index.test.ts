@@ -37,7 +37,7 @@ test('parse empty array', () => {
           reason: string;
         }
       | {
-          valid: boolean;
+          valid: true;
           rest: string[];
           parsed: Partial<{
             help: boolean;
