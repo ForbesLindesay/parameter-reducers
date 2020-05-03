@@ -22,6 +22,10 @@ workflows:
           <<: *not_master
           name: node-12
           version: '12'
+      - unit-tests:
+          <<: *not_master
+          name: node-14
+          version: '14'
 
   release:
     jobs:
@@ -33,6 +37,10 @@ workflows:
           <<: *only_master
           name: node-12
           version: '12'
+      - unit-tests:
+          <<: *only_master
+          name: node-14
+          version: '14'
 
       - publish-dry-run:
           <<: *only_master
@@ -50,6 +58,7 @@ workflows:
           requires:
             - node-10
             - node-12
+            - node-14
             - publish-approval
 
 jobs:
@@ -90,7 +99,7 @@ commands:
           command: node -v && npm -v && yarn -v
       - run:
           name: Install Dependencies
-          command: yarn install --pure-lockfile
+          command: yarn install --frozen-lockfile
 
   build:
     steps:
