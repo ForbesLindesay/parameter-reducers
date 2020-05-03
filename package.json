@@ -1,9 +1,9 @@
 {
-  "name": "@forbeslindesay/npm-package-template",
-  "description": "npm-package-template",
+  "name": "parameter-reducers",
+  "description": "Use reducers to build type safe CLI parameter parsers",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "repository": "git@github.com:ForbesLindesay/npm-package-template.git",
+  "repository": "git@github.com:ForbesLindesay/parameter-reducers.git",
   "author": "Forbes Lindesay <forbes@lindesay.co.uk>",
   "license": "MIT",
   "scripts": {
@@ -26,6 +26,7 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^25.3.1",
     "tslint": "^6.1.1",
+    "type-assertions": "^1.1.0",
     "typescript": "^3.8.3"
   },
   "jest": {
