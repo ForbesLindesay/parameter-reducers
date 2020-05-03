@@ -26,7 +26,7 @@ const globalParams = startChain()
         default:
           return {
             valid: false,
-            reason: `${key} should be one of debug, finfo, warn or error`,
+            reason: `${key} should be one of debug, info, warn or error`,
           };
       }
     }),
