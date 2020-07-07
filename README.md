@@ -11,7 +11,7 @@ yarn add parameter-reducers
 ## Usage
 
 ```ts
-import {parse, startChain, param} from 'parameter-reducers';
+import {parse, startChain, param, valid, invalid} from 'parameter-reducers';
 
 const globalParams = startChain()
   .addParam(param.flag(['-h', '--help'], 'help'))
@@ -22,12 +22,9 @@ const globalParams = startChain()
         case 'info':
         case 'warn':
         case 'error':
-          return {valid: true, value: str};
+          return valid(str);
         default:
-          return {
-            valid: false,
-            reason: `${key} should be one of debug, info, warn or error`,
-          };
+          return invalid(`${key} should be one of debug, info, warn or error`);
       }
     }),
   );
