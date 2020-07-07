@@ -59,6 +59,7 @@ test('parse empty array', () => {
   >();
 
   expect(result).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: [],
     parsed: {},
@@ -77,6 +78,7 @@ test('parse some valid args then some not valid args', () => {
   ]);
 
   expect(result).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: ['oops', '--name', 'Forbes Lindesay'],
     parsed: {
@@ -97,6 +99,7 @@ test('parse duplicate key', () => {
   ]);
 
   expect(result).toEqual({
+    extract: expect.any(Function),
     valid: false,
     reason: 'You have specified more than one value for --logLevel',
   });
@@ -135,6 +138,7 @@ test('positional', () => {
   >();
 
   expect(result).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: [],
     parsed: {
@@ -144,6 +148,7 @@ test('positional', () => {
     },
   });
   expect(parse(positional, ['--input', 'a', 'val', '--output', 'b'])).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: [],
     parsed: {
@@ -153,6 +158,7 @@ test('positional', () => {
     },
   });
   expect(parse(positional, ['val', '--input', 'a', '--output', 'b'])).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: [],
     parsed: {
@@ -163,6 +169,7 @@ test('positional', () => {
   });
   expect(parse(positional, ['--val', '--input', 'a', '--output', 'b'])).toEqual(
     {
+      extract: expect.any(Function),
       valid: true,
       rest: ['--val', '--input', 'a', '--output', 'b'],
       parsed: {},
@@ -202,6 +209,7 @@ test('multiple positional', () => {
   >();
 
   expect(result).toEqual({
+    extract: expect.any(Function),
     valid: true,
     rest: [],
     parsed: {
