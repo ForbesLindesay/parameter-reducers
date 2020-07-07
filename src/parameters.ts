@@ -8,6 +8,7 @@ export function flag<TName extends string>(
   const shorthands = new Set(
     keys.filter((k) => /^\-[a-z]$/i.test(k)).map((k) => k[1]),
   );
+  const negations = keys.map((key) => key.replace(/^\-\-?/, '--no-'));
   return (input, parsed) => {
     for (const key of keys) {
       if (input[0] === key) {
@@ -15,6 +16,14 @@ export function flag<TName extends string>(
           return invalid(`You have specified more than one value for ${key}`);
         }
         return valid(parsed, name, true, input.slice(1));
+      }
+    }
+    for (const key of negations) {
+      if (input[0] === key) {
+        if ((parsed as any)[name] !== undefined) {
+          return invalid(`You have specified more than one value for ${key}`);
+        }
+        return valid(parsed, name, false, input.slice(1));
       }
     }
     if (shorthands.size && /^\-[a-z]+$/i.test(input[0])) {
