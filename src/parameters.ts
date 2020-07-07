@@ -123,3 +123,72 @@ export function integer<TName extends string>(
     return valid(value);
   });
 }
+
+export function parsedPositionalString<TName extends string, TParsed>(
+  name: TName,
+  parse: (value: string) => undefined | ParsedString<TParsed>,
+): ParameterReducer<{[name in TName]: TParsed}> {
+  return (input, parsed) => {
+    if ((parsed as any)[name] !== undefined) {
+      return undefined;
+    }
+    const result = parse(input[0]);
+    if (!result?.valid) return result;
+    return valid(parsed, name, result.value, input.slice(1));
+  };
+}
+
+export function positionalString<TName extends string>(name: TName) {
+  return parsedPositionalString(name, (value) => {
+    if (value[0] === '-') return undefined;
+    return valid(value);
+  });
+}
+
+export function parsedPositionalStringList<TName extends string, TParsed>(
+  name: TName,
+  parse: (value: string) => undefined | ParsedString<TParsed>,
+  options: {eager?: boolean} = {},
+): ParameterReducer<{[name in TName]: TParsed[]}> {
+  return (input, parsed) => {
+    if (options.eager) {
+      const results = [];
+      let i = 0;
+      for (; i < input.length; i++) {
+        const result = parse(input[i]);
+        if (!result) break;
+        if (!result.valid) return result;
+        results.push(input[i]);
+      }
+      if (i === 0) return undefined;
+      return valid(
+        parsed,
+        name,
+        [...((parsed as any)[name] || []), ...results],
+        input.slice(i),
+      );
+    }
+    const result = parse(input[0]);
+    if (!result?.valid) return result;
+    return valid(
+      parsed,
+      name,
+      [...((parsed as any)[name] || []), result.value],
+      input.slice(1),
+    );
+  };
+}
+
+export function positionalStringList<TName extends string>(
+  name: TName,
+  options: {eager?: boolean} = {},
+) {
+  return parsedPositionalStringList(
+    name,
+    (value) => {
+      if (value[0] === '-') return undefined;
+      return valid(value);
+    },
+    options,
+  );
+}

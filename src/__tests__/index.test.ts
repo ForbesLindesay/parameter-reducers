@@ -35,11 +35,19 @@ test('parse empty array', () => {
       | {
           valid: false;
           reason: string;
+          extract: () => never;
         }
       | {
           valid: true;
           rest: string[];
           parsed: Partial<{
+            help: boolean;
+            logLevel: 'debug' | 'info' | 'warn' | 'error';
+            name: string;
+            verified: boolean;
+            force: boolean;
+          }>;
+          extract: () => Partial<{
             help: boolean;
             logLevel: 'debug' | 'info' | 'warn' | 'error';
             name: string;
@@ -91,5 +99,120 @@ test('parse duplicate key', () => {
   expect(result).toEqual({
     valid: false,
     reason: 'You have specified more than one value for --logLevel',
+  });
+});
+
+test('positional', () => {
+  const positional = startChain()
+    .addParam(param.string(['--input'], 'input'))
+    .addParam(param.string(['--output'], 'output'))
+    .addParam(param.positionalString('value'));
+  const result = parse(positional, ['--input', 'a', '--output', 'b', 'val']);
+
+  ta.assert<
+    ta.Equal<
+      typeof result,
+      | {
+          valid: false;
+          reason: string;
+          extract: () => never;
+        }
+      | {
+          valid: true;
+          rest: string[];
+          parsed: Partial<{
+            input: string;
+            output: string;
+            value: string;
+          }>;
+          extract: () => Partial<{
+            input: string;
+            output: string;
+            value: string;
+          }>;
+        }
+    >
+  >();
+
+  expect(result).toEqual({
+    valid: true,
+    rest: [],
+    parsed: {
+      input: 'a',
+      output: 'b',
+      value: 'val',
+    },
+  });
+  expect(parse(positional, ['--input', 'a', 'val', '--output', 'b'])).toEqual({
+    valid: true,
+    rest: [],
+    parsed: {
+      input: 'a',
+      output: 'b',
+      value: 'val',
+    },
+  });
+  expect(parse(positional, ['val', '--input', 'a', '--output', 'b'])).toEqual({
+    valid: true,
+    rest: [],
+    parsed: {
+      input: 'a',
+      output: 'b',
+      value: 'val',
+    },
+  });
+  expect(parse(positional, ['--val', '--input', 'a', '--output', 'b'])).toEqual(
+    {
+      valid: true,
+      rest: ['--val', '--input', 'a', '--output', 'b'],
+      parsed: {},
+    },
+  );
+});
+test('multiple positional', () => {
+  const positional = startChain()
+    .addParam(param.positionalString('input'))
+    .addParam(param.positionalString('output'))
+    .addParam(param.positionalString('value'));
+  const result = parse(positional, ['a', 'b', 'val']);
+
+  ta.assert<
+    ta.Equal<
+      typeof result,
+      | {
+          valid: false;
+          reason: string;
+          extract: () => never;
+        }
+      | {
+          valid: true;
+          rest: string[];
+          parsed: Partial<{
+            input: string;
+            output: string;
+            value: string;
+          }>;
+          extract: () => Partial<{
+            input: string;
+            output: string;
+            value: string;
+          }>;
+        }
+    >
+  >();
+
+  expect(result).toEqual({
+    valid: true,
+    rest: [],
+    parsed: {
+      input: 'a',
+      output: 'b',
+      value: 'val',
+    },
+  });
+  expect(result.extract()).toEqual({
+    input: 'a',
+    output: 'b',
+    value: 'val',
   });
 });
