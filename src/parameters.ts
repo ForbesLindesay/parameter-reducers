@@ -1,4 +1,4 @@
-import {ParameterReducer} from '.';
+import {ParameterReducer, ParsedString} from '.';
 import {valid, invalid} from './helpers';
 
 export function flag<TName extends string>(
@@ -37,12 +37,7 @@ export function flag<TName extends string>(
 export function parsedString<TName extends string, TParsed>(
   keys: string[],
   name: TName,
-  parse: (
-    value: string,
-    key: string,
-  ) =>
-    | {readonly valid: true; readonly value: TParsed}
-    | {readonly valid: false; readonly reason: string},
+  parse: (value: string, key: string) => ParsedString<TParsed>,
 ): ParameterReducer<{[name in TName]: TParsed}> {
   return (input, parsed) => {
     for (const key of keys) {
@@ -65,12 +60,7 @@ export function parsedString<TName extends string, TParsed>(
 export function parsedStringList<TName extends string, TParsed>(
   keys: string[],
   name: TName,
-  parse: (
-    value: string,
-    key: string,
-  ) =>
-    | {readonly valid: true; readonly value: TParsed}
-    | {readonly valid: false; readonly reason: string},
+  parse: (value: string, key: string) => ParsedString<TParsed>,
 ): ParameterReducer<{[name in TName]: TParsed[]}> {
   return (input, parsed) => {
     for (const key of keys) {

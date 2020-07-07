@@ -2,7 +2,7 @@ import * as param from './parameters';
 import {ParameterReducer} from './types';
 
 export {param};
-export {ParameterReducerResult, ParameterReducer} from './types';
+export {ParameterReducerResult, ParameterReducer, ParsedString} from './types';
 export {Chain, startChain} from './chain';
 export {valid, invalid} from './helpers';
 
