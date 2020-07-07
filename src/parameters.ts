@@ -1,4 +1,4 @@
-import {ParameterReducer} from '.';
+import {ParameterReducer, ParsedString} from '.';
 import {valid, invalid} from './helpers';
 
 export function flag<TName extends string>(
@@ -8,6 +8,7 @@ export function flag<TName extends string>(
   const shorthands = new Set(
     keys.filter((k) => /^\-[a-z]$/i.test(k)).map((k) => k[1]),
   );
+  const negations = keys.map((key) => key.replace(/^\-\-?/, '--no-'));
   return (input, parsed) => {
     for (const key of keys) {
       if (input[0] === key) {
@@ -15,6 +16,14 @@ export function flag<TName extends string>(
           return invalid(`You have specified more than one value for ${key}`);
         }
         return valid(parsed, name, true, input.slice(1));
+      }
+    }
+    for (const key of negations) {
+      if (input[0] === key) {
+        if ((parsed as any)[name] !== undefined) {
+          return invalid(`You have specified more than one value for ${key}`);
+        }
+        return valid(parsed, name, false, input.slice(1));
       }
     }
     if (shorthands.size && /^\-[a-z]+$/i.test(input[0])) {
@@ -37,12 +46,7 @@ export function flag<TName extends string>(
 export function parsedString<TName extends string, TParsed>(
   keys: string[],
   name: TName,
-  parse: (
-    value: string,
-    key: string,
-  ) =>
-    | {readonly valid: true; readonly value: TParsed}
-    | {readonly valid: false; readonly reason: string},
+  parse: (value: string, key: string) => ParsedString<TParsed>,
 ): ParameterReducer<{[name in TName]: TParsed}> {
   return (input, parsed) => {
     for (const key of keys) {
@@ -65,12 +69,7 @@ export function parsedString<TName extends string, TParsed>(
 export function parsedStringList<TName extends string, TParsed>(
   keys: string[],
   name: TName,
-  parse: (
-    value: string,
-    key: string,
-  ) =>
-    | {readonly valid: true; readonly value: TParsed}
-    | {readonly valid: false; readonly reason: string},
+  parse: (value: string, key: string) => ParsedString<TParsed>,
 ): ParameterReducer<{[name in TName]: TParsed[]}> {
   return (input, parsed) => {
     for (const key of keys) {
@@ -123,4 +122,73 @@ export function integer<TName extends string>(
     }
     return valid(value);
   });
+}
+
+export function parsedPositionalString<TName extends string, TParsed>(
+  name: TName,
+  parse: (value: string) => undefined | ParsedString<TParsed>,
+): ParameterReducer<{[name in TName]: TParsed}> {
+  return (input, parsed) => {
+    if ((parsed as any)[name] !== undefined) {
+      return undefined;
+    }
+    const result = parse(input[0]);
+    if (!result?.valid) return result;
+    return valid(parsed, name, result.value, input.slice(1));
+  };
+}
+
+export function positionalString<TName extends string>(name: TName) {
+  return parsedPositionalString(name, (value) => {
+    if (value[0] === '-') return undefined;
+    return valid(value);
+  });
+}
+
+export function parsedPositionalStringList<TName extends string, TParsed>(
+  name: TName,
+  parse: (value: string) => undefined | ParsedString<TParsed>,
+  options: {eager?: boolean} = {},
+): ParameterReducer<{[name in TName]: TParsed[]}> {
+  return (input, parsed) => {
+    if (options.eager) {
+      const results = [];
+      let i = 0;
+      for (; i < input.length; i++) {
+        const result = parse(input[i]);
+        if (!result) break;
+        if (!result.valid) return result;
+        results.push(input[i]);
+      }
+      if (i === 0) return undefined;
+      return valid(
+        parsed,
+        name,
+        [...((parsed as any)[name] || []), ...results],
+        input.slice(i),
+      );
+    }
+    const result = parse(input[0]);
+    if (!result?.valid) return result;
+    return valid(
+      parsed,
+      name,
+      [...((parsed as any)[name] || []), result.value],
+      input.slice(1),
+    );
+  };
+}
+
+export function positionalStringList<TName extends string>(
+  name: TName,
+  options: {eager?: boolean} = {},
+) {
+  return parsedPositionalStringList(
+    name,
+    (value) => {
+      if (value[0] === '-') return undefined;
+      return valid(value);
+    },
+    options,
+  );
 }

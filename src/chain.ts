@@ -13,7 +13,7 @@ export function startChain<T>(
       addParam: <S>(childParam: ParameterReducer<S>): Chain<T & S> =>
         startChain(
           (input, parsed) =>
-            childParam(input, parsed) || (param(input, parsed) as any),
+            (param(input, parsed) as any) || childParam(input, parsed),
         ),
     },
   );

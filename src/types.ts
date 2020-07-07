@@ -12,3 +12,7 @@ export type ParameterReducer<TParsed> = <TAlreadyParsed>(
   input: string[],
   parsed: TAlreadyParsed,
 ) => ParameterReducerResult<TParsed, TAlreadyParsed>;
+
+export type ParsedString<TParsed> =
+  | {readonly valid: true; readonly value: TParsed}
+  | {readonly valid: false; readonly reason: string};
