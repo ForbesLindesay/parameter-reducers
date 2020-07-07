@@ -4,6 +4,7 @@ import {ParameterReducer} from './types';
 export {param};
 export {ParameterReducerResult, ParameterReducer} from './types';
 export {Chain, startChain} from './chain';
+export {valid, invalid} from './helpers';
 
 export function parse<T>(
   parameters: ParameterReducer<T>,
