@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc",
     "postbuild": "rimraf lib/**/__tests__",
-    "lint": "tslint './src/**/*.{ts,tsx}' -t verbose -p .",
     "prettier:write": "prettier --ignore-path .gitignore --write './**/*.{md,json,yaml,js,jsx,ts,tsx}'",
     "prettier:check": "prettier --ignore-path .gitignore --list-different './**/*.{md,json,yaml,js,jsx,ts,tsx}'",
     "test": "jest",
@@ -26,9 +25,8 @@
     "prettier": "^2.0.4",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.3.1",
-    "tslint": "^6.1.1",
     "type-assertions": "^1.1.0",
-    "typescript": "^3.8.3"
+    "typescript": "^4.8.4"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -57,8 +55,7 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
-      "prettier --write",
-      "tslint -t verbose -p ."
+      "prettier --write"
     ],
     "*.{md,json,yaml,js,jsx}": [
       "prettier --write"

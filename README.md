@@ -283,6 +283,39 @@ A string list is just like a string, but can occur multiple times to form a list
 </details>
 
 <details>
+  <summary><strong><code>param.enumString</code></strong> - <code>T</code></summary><br/>
+
+```ts
+import {startChain, param, parse} from 'parameter-reducers';
+
+const params = startChain().addParam(
+  param.enumString(['-l', '--level'], 'level', [
+    'info',
+    'warn',
+    'error',
+  ] as const),
+);
+
+const {level = 'error'} = parse(params, process.argv.slice(2)).extract();
+
+if (level === 'info') {
+  console.info('Some info');
+}
+if (level === 'info' || 'warn') {
+  console.warn('Some warning');
+}
+console.warn('Some error');
+```
+
+```
+run -l warn
+```
+
+An enum string can only have one of a defined list of values.
+
+</details>
+
+<details>
   <summary><strong><code>param.integer</code></strong> - <code>number</code></summary><br/>
 
 ```ts
@@ -357,6 +390,34 @@ run "I do not always" --from Forbes "think in order" --to Anyone
 A positional string list consumes all strings that don't start with `-` and are not consumed by any other parser. Since it consumes so eagerly, there is rarely any point having 2 positional string list parsers.
 
 > N.B. if you have any `positionalString` parsers, they must go before your `positionalStringList` parser.
+
+</details>
+
+<details>
+  <summary><strong><code>param.positionalEnumString</code></strong> - <code>T</code></summary><br/>
+
+```ts
+import {startChain, param, parse} from 'parameter-reducers';
+
+const params = startChain().addParam(
+  param.positionalEnumString('env', ['staging', 'production'] as const),
+);
+
+const {env = 'staging'} = parse(params, process.argv.slice(2)).extract();
+
+if (env === 'staging') {
+  console.info('Deploying to staging');
+}
+if (env === 'production') {
+  console.warn('Deploying to production');
+}
+```
+
+```
+run production
+```
+
+A positional enum string can only have one of a defined list of values.
 
 </details>
 
