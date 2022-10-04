@@ -18,7 +18,6 @@ export function valid<TAlreadyParsed, TName extends string, TValue>(
   if (name === undefined && value === undefined && rest === undefined) {
     return {valid: true, value: alreadyParsedOrValue};
   }
-  // tslint:disable-next-line: strict-type-predicates
   if (typeof name !== 'string') {
     throw new Error('Expected name to be a string');
   }

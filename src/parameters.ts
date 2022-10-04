@@ -105,6 +105,46 @@ export function stringList<TName extends string>(
   return parsedStringList(keys, name, (value) => valid(value));
 }
 
+export function enumString<
+  TName extends string,
+  TValues extends readonly [string, ...string[]]
+>(
+  keys: string[],
+  name: TName,
+  values: TValues,
+): ParameterReducer<{[name in TName]: TValues[number]}>;
+export function enumString<TName extends string>(
+  keys: string[],
+  name: TName,
+  values: readonly string[],
+): ParameterReducer<{[name in TName]: string}>;
+export function enumString<
+  TName extends string,
+  TValues extends readonly [string, ...string[]]
+>(
+  keys: string[],
+  name: TName,
+  values: TValues,
+): ParameterReducer<{[name in TName]: TValues[number]}> {
+  if (values.length === 0) {
+    throw new Error('You must provide at least one value to enumString');
+  }
+  return parsedString(keys, name, (value, key) => {
+    if (values.includes(value)) {
+      return valid(value as TValues[number]);
+    } else {
+      return invalid(
+        values.length === 1
+          ? `Expected ${key} to be ${values[0]}`
+          : `Expected ${key} to be one of ${values
+              .slice(0, values.length - 1)
+              .map((v) => `"${v}"`)
+              .join(`, `)} or "${values[values.length - 1]}"`,
+      );
+    }
+  });
+}
+
 export function integer<TName extends string>(
   keys: string[],
   name: TName,

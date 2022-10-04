@@ -24,7 +24,14 @@ const params = startChain()
   .addParam(globalParams)
   .addParam(param.string(['-n', '--name'], 'name'))
   .addParam(param.flag(['-v', '--verified'], 'verified'))
-  .addParam(param.flag(['-f', '--force'], 'force'));
+  .addParam(param.flag(['-f', '--force'], 'force'))
+  .addParam(
+    param.enumString([`-k`, `--kind`], `kind`, [
+      `awesome`,
+      `ok`,
+      `hmm`,
+    ] as const),
+  );
 
 test('parse empty array', () => {
   const result = parse(params, []);
@@ -46,6 +53,7 @@ test('parse empty array', () => {
             name: string;
             verified: boolean;
             force: boolean;
+            kind: 'awesome' | 'ok' | 'hmm';
           }>;
           extract: () => Partial<{
             help: boolean;
@@ -53,6 +61,7 @@ test('parse empty array', () => {
             name: string;
             verified: boolean;
             force: boolean;
+            kind: 'awesome' | 'ok' | 'hmm';
           }>;
         }
     >
@@ -222,5 +231,21 @@ test('multiple positional', () => {
     input: 'a',
     output: 'b',
     value: 'val',
+  });
+});
+
+test('valid enum value', () => {
+  const result = parse(params, [`--kind`, `ok`]).extract();
+  expect(result).toEqual({
+    kind: 'ok',
+  });
+});
+
+test('invalid enum value', () => {
+  const result = parse(params, [`--kind`, `yum`]);
+  expect(result).toEqual({
+    extract: expect.any(Function),
+    valid: false,
+    reason: `Expected --kind to be one of "awesome", "ok" or "hmm"`,
   });
 });
