@@ -393,6 +393,34 @@ A positional string list consumes all strings that don't start with `-` and are 
 
 </details>
 
+<details>
+  <summary><strong><code>param.positionalEnumString</code></strong> - <code>T</code></summary><br/>
+
+```ts
+import {startChain, param, parse} from 'parameter-reducers';
+
+const params = startChain().addParam(
+  param.positionalEnumString('env', ['staging', 'production'] as const),
+);
+
+const {env = 'staging'} = parse(params, process.argv.slice(2)).extract();
+
+if (env === 'staging') {
+  console.info('Deploying to staging');
+}
+if (env === 'production') {
+  console.warn('Deploying to production');
+}
+```
+
+```
+run production
+```
+
+A positional enum string can only have one of a defined list of values.
+
+</details>
+
 ### Parsed Parameter Types
 
 If none of the built in parameter types match what you need, you can normally get what you need by simply parsing the relevant string.

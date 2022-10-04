@@ -232,3 +232,38 @@ export function positionalStringList<TName extends string>(
     options,
   );
 }
+
+export function positionalEnumString<
+  TName extends string,
+  TValues extends readonly [string, ...string[]]
+>(
+  name: TName,
+  values: TValues,
+): ParameterReducer<{[name in TName]: TValues[number]}>;
+export function positionalEnumString<TName extends string>(
+  name: TName,
+  values: readonly string[],
+): ParameterReducer<{[name in TName]: string}>;
+export function positionalEnumString<
+  TName extends string,
+  TValues extends readonly [string, ...string[]]
+>(
+  name: TName,
+  values: TValues,
+): ParameterReducer<{[name in TName]: TValues[number]}> {
+  return parsedPositionalString(name, (value) => {
+    if (value[0] === '-') return undefined;
+    if (values.includes(value)) {
+      return valid(value as TValues[number]);
+    } else {
+      return invalid(
+        values.length === 1
+          ? `Expected ${name} to be ${values[0]}`
+          : `Expected ${name} to be one of ${values
+              .slice(0, values.length - 1)
+              .map((v) => `"${v}"`)
+              .join(`, `)} or "${values[values.length - 1]}"`,
+      );
+    }
+  });
+}
