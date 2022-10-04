@@ -283,6 +283,39 @@ A string list is just like a string, but can occur multiple times to form a list
 </details>
 
 <details>
+  <summary><strong><code>param.enumString</code></strong> - <code>T</code></summary><br/>
+
+```ts
+import {startChain, param, parse} from 'parameter-reducers';
+
+const params = startChain().addParam(
+  param.enumString(['-l', '--level'], 'level', [
+    'info',
+    'warn',
+    'error',
+  ] as const),
+);
+
+const {level = 'error'} = parse(params, process.argv.slice(2)).extract();
+
+if (level === 'info') {
+  console.info('Some info');
+}
+if (level === 'info' || 'warn') {
+  console.warn('Some warning');
+}
+console.warn('Some error');
+```
+
+```
+run -l warn
+```
+
+An enum string can only have one of a defined list of values.
+
+</details>
+
+<details>
   <summary><strong><code>param.integer</code></strong> - <code>number</code></summary><br/>
 
 ```ts
