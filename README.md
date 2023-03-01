@@ -508,7 +508,7 @@ for (const url of urls) {
 ```
 
 ```
-run --url "http://example.com/foo" --url "http://example.com/bar" --env production
+run --urls "http://example.com/foo" --urls "http://example.com/bar" --env production
 ```
 
 `parsedStringList` combines the parsing from `parsedString` with the ability to pass multiple values like `stringList`.
